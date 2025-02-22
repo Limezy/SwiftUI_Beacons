@@ -6,21 +6,40 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct BeaconStateView: View {
-    var beaconState: String?
+    var beaconState: CLProximity
+    var beaconRssi: Int
+    var label: String {
+        switch beaconState {
+        case .unknown:
+            "Unknown"
+        case .immediate:
+            "Immediate"
+        case .near:
+            "Near"
+        case .far:
+            "Far"
+        @unknown default:
+            "Default"
+        }
+        
+    }
     var body: some View {
-        Text(beaconState ?? "")
-            .font(Font.system(size: 56, design: .rounded))
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-            .background(Color.gray)
-            .edgesIgnoringSafeArea(.all)
-
+        VStack {
+            Text(label)
+            Text(String(beaconRssi))
+        }
+        .font(Font.system(size: 56, design: .rounded))
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .background(Color.gray)
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
 struct BeaconStateView_Previews: PreviewProvider {
     static var previews: some View {
-        BeaconStateView()
+        BeaconStateView(beaconState: .far, beaconRssi: 0)
     }
 }

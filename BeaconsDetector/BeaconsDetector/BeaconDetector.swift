@@ -9,10 +9,12 @@ import Foundation
 import Combine
 import CoreLocation
 
+@Observable
 class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate {
-    var didChange = PassthroughSubject<Void, Never>()
+    //var didChange = PassthroughSubject<Void, Never>()
     var locationManager: CLLocationManager?
     var lastDistance: CLProximity = .unknown
+    var rssi: Int = 0
     
     override init() {
         super.init()
@@ -33,7 +35,13 @@ class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func startScanning() {
-        let uuid = UUID(uuidString: "5A4BCFCE-174E-4BAC-A814-092E77F687")!
+        let uuid = UUID(uuidString: "11111111-2222-2222-2222-333333333333")
+        
+        guard let uuid = uuid else {
+            print("Invalid UUID string")
+            return
+        }
+        
         let constraint = CLBeaconIdentityConstraint(uuid: uuid, major: 123, minor: 456)
         let beaconRegion = CLBeaconRegion(beaconIdentityConstraint: constraint, identifier: "MyBeacon")
         
@@ -41,16 +49,13 @@ class BeaconDetector: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager?.startRangingBeacons(satisfying: constraint)
     }
     
-    func update(distance: CLProximity) {
-        lastDistance = distance
-        didChange.send(())
-    }
-    
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
         if let beacon = beacons.first {
-            update(distance: beacon.proximity)
+            lastDistance = beacon.proximity
+            rssi = beacon.rssi
         } else {
-            update(distance: .unknown)
+            lastDistance = .unknown
+            rssi = 0
         }
     }
 }

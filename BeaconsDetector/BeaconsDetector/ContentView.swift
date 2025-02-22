@@ -10,21 +10,9 @@ import Combine
 import CoreLocation
 
 struct ContentView: View {
-    @ObservedObject var detector = BeaconDetector()
+    @State private var detector = BeaconDetector()
     var body: some View {
- 
-        switch detector.lastDistance {
-        case CLProximity.immediate:
-            BeaconStateView(beaconState: "immediate")
-        case .unknown:
-            BeaconStateView(beaconState: "unknown")
-        case .near:
-            BeaconStateView(beaconState: "near")
-        case .far:
-            BeaconStateView(beaconState: "far")
-        @unknown default:
-            BeaconStateView(beaconState: "unknown")
-        }
+        BeaconStateView(beaconState: detector.lastDistance, beaconRssi: detector.rssi)
     }
 }
 
